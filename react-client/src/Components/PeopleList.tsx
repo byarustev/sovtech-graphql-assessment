@@ -6,88 +6,134 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+import Pagination from '@material-ui/lab/Pagination';
+import { useHistory } from "react-router-dom";
+import { gql, useQuery } from '@apollo/client';
 
 interface Column {
-  id: 'name' | 'code' | 'population' | 'size';
+  id: 'name' | 'gender' | 'height' | 'mass';
   label: string;
   minWidth?: number;
   align?: 'right';
-  format?: (value: number) => string;
 }
 
 const columns: Column[] = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
-  {
-    id: 'population',
-    label: 'Population',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+  { 
+    id: 'name', 
+    label: 'Name',
+    minWidth: 170 
+  },
+  { 
+    id: 'gender', 
+    label: 'Gender', 
+    minWidth: 100 
   },
   {
-    id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
+    id: 'height',
+    label: 'Height',
     minWidth: 170,
     align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+  },
+  {
+    id: 'mass',
+    label: 'Mass',
+    minWidth: 170,
+    align: 'right',
   }
-];
-
-interface Data {
-  name: string;
-  code: string;
-  population: number;
-  size: number;
-}
-
-function createData(name: string, code: string, population: number, size: number): Data {
-  return { name, code, population, size};
-}
-
-const rows = [
-  createData('India', 'IN', 1324171354, 3287263),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('Italy', 'IT', 60483973, 301340),
-  createData('United States', 'US', 327167434, 9833520),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-  createData('Germany', 'DE', 83019200, 357578),
-  createData('Ireland', 'IE', 4857000, 70273),
-  createData('Mexico', 'MX', 126577691, 1972550),
-  createData('Japan', 'JP', 126317000, 377973),
-  createData('France', 'FR', 67022000, 640679),
-  createData('United Kingdom', 'GB', 67545757, 242495),
-  createData('Russia', 'RU', 146793744, 17098246),
-  createData('Nigeria', 'NG', 200962417, 923768),
-  createData('Brazil', 'BR', 210147125, 8515767),
 ];
 
 const useStyles = makeStyles({
   root: {
+    paddingBottom: 20,
     width: '100%',
   },
   container: {
     marginTop: 50,
-    maxHeight: 440,
+    marginBottom: 20,
+    maxHeight: 500,
   },
+  pagination:{
+    marginTop: 5,
+    marginLeft: 5,
+  },
+  row:{
+    cursor: 'pointer'
+  }
 });
 
-export default function PeopleList() {
-  const classes = useStyles();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+const GET_PAGE_PEOPLE = gql`
+  query getPeoplePage($page: Int!) {
+    peoplePage(page:$page){
+      count
+      next
+      previous
+      people{
+        id
+        name
+        gender
+        height
+        mass
+      }
+    }
+  }
+`;
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+
+const PeopleList=() => {
+  const classes = useStyles();
+  const history = useHistory();
+  const [page, setPage] = React.useState(1);
+
+  const { loading, error, data } = useQuery(GET_PAGE_PEOPLE, {
+    variables: { page },
+  });
+
+  let totalPages = 0;
+  
+  const handleChangePage = (event: React.ChangeEvent<unknown>, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  const navigateTo=(id:number)=>{
+    history.push(`/details/${id}`);
+  }
+
+  const  maybeRenderTableRows = () => {
+    if(loading){
+      return <TableRow>
+              <TableCell colSpan={4}  align="center">
+                Loading...
+              </TableCell>
+            </TableRow>;
+    }
+
+    if(error){
+      return <TableRow>
+      <TableCell colSpan={4}  align="center">
+        Something went wrong
+      </TableCell>
+    </TableRow>;
+    }
+
+    const dataRows = data.peoplePage.people;
+    const dataValuesCount = data.peoplePage.count;
+    totalPages = Math.ceil(dataValuesCount / 10);
+
+    return dataRows.map((row: any, index: any) => (
+        <TableRow className={classes.row} hover tabIndex={-1} key={row.id} onClick={()=>navigateTo(row.id)}>
+          {columns.map((column) => {
+            const value = row[column.id];
+            return (
+              <TableCell key={column.id}>
+                {value}
+              </TableCell>
+            );
+          })}
+        </TableRow>
+      ));
+    
+  }
 
   return (
     <Paper className={classes.root}>
@@ -98,7 +144,6 @@ export default function PeopleList() {
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
-                  align={column.align}
                   style={{ minWidth: column.minWidth }}
                 >
                   {column.label}
@@ -107,32 +152,19 @@ export default function PeopleList() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-              return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                  {columns.map((column) => {
-                    const value = row[column.id];
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
+              {maybeRenderTableRows()}
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
+      <Pagination 
+        className={classes.pagination} 
+        count={totalPages} 
         page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+        onChange={handleChangePage}
+        variant="outlined"
+       />
     </Paper>
   );
 };
+
+export default PeopleList;

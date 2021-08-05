@@ -1,5 +1,6 @@
 "use strict";
 var express = require('express');
+const cors = require('cors');
 var { graphqlHTTP } = require('express-graphql');
 const { GraphQLList, GraphQLInt, GraphQLObjectType, GraphQLString, } = require('graphql');
 var fetch = require('node-fetch');
@@ -44,10 +45,18 @@ const PlanetType = new GraphQLObjectType({
         },
     }),
 });
+function getUserId(url) {
+    const urlArray = url.split("/");
+    return Number(urlArray[urlArray.length - 2]); // return second last value
+}
 const PersonType = new GraphQLObjectType({
     name: 'Person',
     description: 'Persons details',
     fields: () => ({
+        id: {
+            type: GraphQLInt,
+            resolve: (person) => getUserId(person.url)
+        },
         name: {
             type: GraphQLString,
             resolve: (person) => person.name,
@@ -70,6 +79,7 @@ const PersonType = new GraphQLObjectType({
         },
     }),
 });
+
 const PeoplePageType = new GraphQLObjectType({
     name: 'Page',
     description: 'People Page',
@@ -79,11 +89,9 @@ const PeoplePageType = new GraphQLObjectType({
         },
         next: {
             type: GraphQLString,
-            // resolve: (person: any) => person.height,
         },
         previous: {
             type: GraphQLString,
-            // resolve: (person: any) => person.mass,
         },
         people: {
             type: new GraphQLList(PersonType),
@@ -95,7 +103,7 @@ const QueryType = new GraphQLObjectType({
     name: 'Query',
     description: 'The root of all... queries',
     fields: () => ({
-        allPeople: {
+        peoplePage: {
             type: PeoplePageType,
             args: {
                 page: { type: GraphQLInt }
@@ -123,6 +131,8 @@ const schema = new GraphQLSchema({
 });
 // Create an express server and a GraphQL endpoint
 var app = express();
+//allow cross origin requests
+app.use(cors());
 app.use('/graphql', graphqlHTTP({
     schema: schema,
     graphiql: true

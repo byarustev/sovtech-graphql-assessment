@@ -1,4 +1,6 @@
 var express = require('express');
+const cors = require('cors');
+
 var {graphqlHTTP} = require('express-graphql');
 const { GraphQLList,
     GraphQLInt,
@@ -10,15 +12,7 @@ var { GraphQLSchema } = require('graphql');
 
 const BASE_URL = 'https://swapi.dev/api';
 
-const fetchResponseByURL=(relativeURL: String)=> fetch(`${BASE_URL}${relativeURL}`).then(
-  (res: any) => 
-  {
-    console.log(res)
-    console.log(`${BASE_URL}${relativeURL}`);
-    return res.json()
-  }
-  
-  );
+const fetchResponseByURL=(relativeURL: String)=> fetch(`${BASE_URL}${relativeURL}`).then((res: any) => res.json());
 const fetchPaginatedPeople=(relativeURL?:String)=> fetchResponseByURL(`/people/${relativeURL?relativeURL:""}`);
 const fetchSearchPeople=(relativeURL?:String)=> fetchResponseByURL(`/people/${relativeURL?relativeURL:""}`).then((json: any) => json.results);
 const fetchPersonByURL=(relativeURL: String)=> fetchResponseByURL(relativeURL);
@@ -55,10 +49,20 @@ const fetchResponseByRelativeURL=(relativeURL: String)=> fetch(`${relativeURL}`)
     }),
   });
 
+function getUserId(url: String){
+  const urlArray = url.split("/");
+  console.log(urlArray);
+  return Number(urlArray[urlArray.length-2]); // return second last value
+}
+
 const PersonType = new GraphQLObjectType({
     name: 'Person',
     description: 'Persons details',
     fields: () => ({
+      id:{
+        type: GraphQLInt,
+        resolve: (person: any) => getUserId(person.url)
+      },
         name: {
         type: GraphQLString,
         resolve: (person: any) => person.name,
@@ -108,7 +112,7 @@ const QueryType = new GraphQLObjectType({
     name: 'Query',
     description: 'The root of all... queries',
     fields: () => ({
-      allPeople: {
+      peoplePage: {
         type: PeoplePageType,
         args: {
           page: {type: GraphQLInt}
@@ -139,6 +143,10 @@ const schema = new GraphQLSchema({
 
 // Create an express server and a GraphQL endpoint
 var app = express();
+
+//allow cross origin requests
+app.use(cors());
+
 app.use('/graphql', graphqlHTTP({
     schema: schema,
     graphiql: true
