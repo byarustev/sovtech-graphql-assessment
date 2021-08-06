@@ -5,16 +5,12 @@ var { graphqlHTTP } = require('express-graphql');
 const { GraphQLList, GraphQLInt, GraphQLObjectType, GraphQLString, } = require('graphql');
 var fetch = require('node-fetch');
 var { GraphQLSchema } = require('graphql');
-const BASE_URL = 'https://swapi.dev/api';
-const fetchResponseByURL = (relativeURL) => fetch(`${BASE_URL}${relativeURL}`).then((res) => {
-    console.log(res);
-    console.log(`${BASE_URL}${relativeURL}`);
-    return res.json();
-});
+const BASE_URL = 'https://www.swapi.tech/api';
+const fetchResponseByURL = (relativeURL) => fetch(`${BASE_URL}${relativeURL}`).then((res) => res.json());
 const fetchPaginatedPeople = (relativeURL) => fetchResponseByURL(`/people/${relativeURL ? relativeURL : ""}`);
 const fetchSearchPeople = (relativeURL) => fetchResponseByURL(`/people/${relativeURL ? relativeURL : ""}`).then((json) => json.results);
-const fetchPersonByURL = (relativeURL) => fetchResponseByURL(relativeURL);
-const fetchResponseByRelativeURL = (relativeURL) => fetch(`${relativeURL}`).then((res) => res.json());
+const fetchPersonByURL = (relativeURL) => fetchResponseByURL(relativeURL).then((json) => json.result.properties);
+const fetchResponseByRelativeURL = (relativeURL) => fetch(`${relativeURL}`).then((res) => res.json()).then((json) => json.result.properties);
 const PlanetType = new GraphQLObjectType({
     name: 'Planet',
     description: 'Planet that a person ...',
@@ -47,7 +43,20 @@ const PlanetType = new GraphQLObjectType({
 });
 function getUserId(url) {
     const urlArray = url.split("/");
-    return Number(urlArray[urlArray.length - 2]); // return second last value
+    return Number(urlArray[urlArray.length - 1]); // return second last value
+}
+/**
+ * The new api call for paginated people only returns a few attributes about a person
+ * {
+ * "uid": "...",
+ * "name": "....",
+ * "url": "url"
+ * }
+ * hence, there is need to fetch the other information that regard to a person
+ *
+ */
+function fetchUserAttribute(url, attr) {
+    return fetchResponseByRelativeURL(url).then((result) => result[attr]);
 }
 const PersonType = new GraphQLObjectType({
     name: 'Person',
@@ -59,19 +68,19 @@ const PersonType = new GraphQLObjectType({
         },
         name: {
             type: GraphQLString,
-            resolve: (person) => person.name,
+            resolve: (person) => person.name ? person.name : fetchUserAttribute(person.url, 'name'),
         },
         height: {
             type: GraphQLString,
-            resolve: (person) => person.height,
+            resolve: (person) => person.height ? person.height : fetchUserAttribute(person.url, 'height'),
         },
         mass: {
             type: GraphQLString,
-            resolve: (person) => person.mass,
+            resolve: (person) => person.mass ? person.mass : fetchUserAttribute(person.url, 'mass'),
         },
         gender: {
             type: GraphQLString,
-            resolve: (person) => person.gender,
+            resolve: (person) => person.gender ? person.gender : fetchUserAttribute(person.url, 'gender'),
         },
         homeworld: {
             type: PlanetType,
@@ -79,13 +88,13 @@ const PersonType = new GraphQLObjectType({
         },
     }),
 });
-
 const PeoplePageType = new GraphQLObjectType({
     name: 'Page',
     description: 'People Page',
     fields: () => ({
-        count: {
+        pages: {
             type: GraphQLInt,
+            resolve: (page) => page.total_pages
         },
         next: {
             type: GraphQLString,
@@ -108,21 +117,21 @@ const QueryType = new GraphQLObjectType({
             args: {
                 page: { type: GraphQLInt }
             },
-            resolve: (root, args) => fetchPaginatedPeople(`${args.page ? "?page=" + args.page : ''}`) // Fetch the person with name `args.name`,
+            resolve: (root, args) => fetchPaginatedPeople(`${args.page ? "?page=" + args.page : '&limit=10'}`)
         },
         person: {
             type: PersonType,
             args: {
                 id: { type: GraphQLInt },
             },
-            resolve: (root, args) => fetchPersonByURL(`/people/${args.id}/`) // Fetch the person with ID `args.id`,
+            resolve: (root, args) => fetchPersonByURL(`/people/${args.id}`) // Fetch the person with ID `args.id`,
         },
         searchPerson: {
             type: new GraphQLList(PersonType),
             args: {
                 name: { type: GraphQLString },
             },
-            resolve: (root, args) => fetchSearchPeople(`?search=${args.name}`) // Fetch the person with name `args.name`,
+            resolve: (root, args) => fetchSearchPeople(`?name=${args.name}`) // Fetch the person with name `args.name`,
         }
     }),
 });

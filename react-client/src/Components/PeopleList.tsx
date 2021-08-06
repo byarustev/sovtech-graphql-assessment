@@ -65,7 +65,7 @@ const useStyles = makeStyles({
 const GET_PAGE_PEOPLE = gql`
   query getPeoplePage($page: Int!) {
     peoplePage(page:$page){
-      count
+      pages
       next
       previous
       people{
@@ -117,8 +117,7 @@ const PeopleList=() => {
     }
 
     const dataRows = data.peoplePage.people;
-    const dataValuesCount = data.peoplePage.count;
-    totalPages = Math.ceil(dataValuesCount / 10);
+    totalPages = data.peoplePage.pages;
 
     return dataRows.map((row: any, index: any) => (
         <TableRow className={classes.row} hover tabIndex={-1} key={row.id} onClick={()=>navigateTo(row.id)}>
