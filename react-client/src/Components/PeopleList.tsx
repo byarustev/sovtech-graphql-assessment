@@ -1,5 +1,8 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -10,6 +13,10 @@ import TableRow from '@material-ui/core/TableRow';
 import Pagination from '@material-ui/lab/Pagination';
 import { useHistory } from "react-router-dom";
 import { gql, useQuery } from '@apollo/client';
+import {PageContext} from '../PagesContext';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import SearchPerson from './SearchPeople';
 
 interface Column {
   id: 'name' | 'gender' | 'height' | 'mass';
@@ -45,13 +52,17 @@ const columns: Column[] = [
 
 const useStyles = makeStyles({
   root: {
+    marginTop: 10,
     paddingBottom: 20,
     width: '100%',
   },
   container: {
-    marginTop: 50,
+    marginTop: 10,
     marginBottom: 20,
     maxHeight: 500,
+  },
+  appBar:{
+    background:"#2d3436",
   },
   pagination:{
     marginTop: 5,
@@ -79,11 +90,66 @@ const GET_PAGE_PEOPLE = gql`
   }
 `;
 
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: any;
+  value: any;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`nav-tabpanel-${index}`}
+      aria-labelledby={`nav-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+function a11yProps(index: any) {
+  return {
+    id: `nav-tab-${index}`,
+    'aria-controls': `nav-tabpanel-${index}`,
+  };
+}
+
+interface LinkTabProps {
+  label?: string;
+  href?: string;
+}
+
+function LinkTab(props: LinkTabProps) {
+  return (
+    <Tab
+      component="a"
+      onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        event.preventDefault();
+      }}
+      {...props}
+    />
+  );
+}
 
 const PeopleList=() => {
   const classes = useStyles();
   const history = useHistory();
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = useContext(PageContext);
+
+  const [tabValue, setTabValue] = React.useState(0);
+
+  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setTabValue(newValue);
+  };
 
   const { loading, error, data } = useQuery(GET_PAGE_PEOPLE, {
     variables: { page },
@@ -119,7 +185,7 @@ const PeopleList=() => {
     const dataRows = data.peoplePage.people;
     totalPages = data.peoplePage.pages;
 
-    return dataRows.map((row: any, index: any) => (
+    return dataRows.map((row: any) => (
         <TableRow className={classes.row} hover tabIndex={-1} key={row.id} onClick={()=>navigateTo(row.id)}>
           {columns.map((column) => {
             const value = row[column.id];
@@ -136,6 +202,19 @@ const PeopleList=() => {
 
   return (
     <Paper className={classes.root}>
+      <AppBar position="static" className={classes.appBar}>
+        <Tabs
+          variant="fullWidth"
+          value={tabValue}
+          onChange={handleTabChange}
+          TabIndicatorProps={{ style: { background: "#ffffff" } }}
+        >
+          <LinkTab label="Home"  {...a11yProps(0)} />
+          <LinkTab label="Search" {...a11yProps(1)} />
+        </Tabs>
+      </AppBar>
+      <TabPanel value={tabValue} index={0}>
+      {/* start home content */}
       <TableContainer className={classes.container}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -162,6 +241,12 @@ const PeopleList=() => {
         onChange={handleChangePage}
         variant="outlined"
        />
+      {/* end home content */}
+      </TabPanel>
+      <TabPanel value={tabValue} index={1}>
+        <SearchPerson />
+      </TabPanel>
+      
     </Paper>
   );
 };

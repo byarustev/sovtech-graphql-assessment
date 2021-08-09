@@ -7,8 +7,12 @@ import {
 } from "react-router-dom";
 import PeopleList from './Components/PeopleList';
 import PersonsDetails from './Components/PersonsDetails';
+import SearchPerson from './Components/SearchPeople';
+import { PageProvider } from './PagesContext';
+
 
 const App = (): JSX.Element => (
+  <PageProvider>
       <Router>
       <Container maxWidth="md">
         <Switch>
@@ -18,9 +22,13 @@ const App = (): JSX.Element => (
           <Route exact path="/details/:id">
             <PersonsDetails />
           </Route>
+          <Route exact path="/search">
+            <SearchPerson />
+          </Route>
         </Switch>
       </Container>
     </Router>
+    </PageProvider>
 );
 
 export default App;
