@@ -73,7 +73,7 @@ const useStyles = makeStyles({
   }
 });
 
-const GET_PAGE_PEOPLE = gql`
+export const GET_PAGE_PEOPLE_QUERY = gql`
   query getPeoplePage($page: Int!) {
     peoplePage(page:$page){
       pages
@@ -96,7 +96,7 @@ interface TabPanelProps {
   value: any;
 }
 
-function TabPanel(props: TabPanelProps) {
+const TabPanel=(props: TabPanelProps) =>{
   const { children, value, index, ...other } = props;
 
   return (
@@ -116,7 +116,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-function a11yProps(index: any) {
+const a11yProps=(index: any)=> {
   return {
     id: `nav-tab-${index}`,
     'aria-controls': `nav-tabpanel-${index}`,
@@ -128,7 +128,7 @@ interface LinkTabProps {
   href?: string;
 }
 
-function LinkTab(props: LinkTabProps) {
+const LinkTab=(props: LinkTabProps) =>{
   return (
     <Tab
       component="a"
@@ -140,7 +140,7 @@ function LinkTab(props: LinkTabProps) {
   );
 }
 
-const PeopleList=() => {
+const ListPeople=(): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const [page, setPage] = useContext(PageContext);
@@ -151,7 +151,7 @@ const PeopleList=() => {
     setTabValue(newValue);
   };
 
-  const { loading, error, data } = useQuery(GET_PAGE_PEOPLE, {
+  const { loading, error, data } = useQuery(GET_PAGE_PEOPLE_QUERY, {
     variables: { page },
   });
 
@@ -229,7 +229,7 @@ const PeopleList=() => {
               ))}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody data-testid="test-table-body">
               {maybeRenderTableRows()}
           </TableBody>
         </Table>
@@ -251,4 +251,4 @@ const PeopleList=() => {
   );
 };
 
-export default PeopleList;
+export default ListPeople;

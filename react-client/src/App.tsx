@@ -5,9 +5,8 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import PeopleList from './Components/PeopleList';
+import ListPeople from './Components/ListPeople';
 import PersonsDetails from './Components/PersonsDetails';
-import SearchPerson from './Components/SearchPeople';
 import { PageProvider } from './PagesContext';
 
 
@@ -17,13 +16,10 @@ const App = (): JSX.Element => (
       <Container maxWidth="md">
         <Switch>
           <Route exact path="/">
-            <PeopleList />
+            <ListPeople />
           </Route>
           <Route exact path="/details/:id">
             <PersonsDetails />
-          </Route>
-          <Route exact path="/search">
-            <SearchPerson />
           </Route>
         </Switch>
       </Container>

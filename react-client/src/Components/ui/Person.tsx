@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }
 }));
 
-interface Planet{
+export interface Planet{
     name: string,
     rotation_period: number,
     orbital_period: number,
@@ -36,7 +36,7 @@ interface Planet{
     population: number
 }
 
-interface PersonType{
+export interface PersonType{
     id: number,
     name: string,
     height: number,
@@ -45,7 +45,6 @@ interface PersonType{
     homeworld: Planet
   }
 
-//
 const PersonComponent = (prop: {person: PersonType}): JSX.Element =>{
     const classes = useStyles();
     const { person } = prop;
