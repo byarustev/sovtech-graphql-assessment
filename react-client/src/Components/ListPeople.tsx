@@ -22,7 +22,6 @@ interface Column {
   id: 'name' | 'gender' | 'height' | 'mass';
   label: string;
   minWidth?: number;
-  align?: 'right';
 }
 
 const columns: Column[] = [
@@ -40,13 +39,11 @@ const columns: Column[] = [
     id: 'height',
     label: 'Height',
     minWidth: 170,
-    align: 'right',
   },
   {
     id: 'mass',
     label: 'Mass',
     minWidth: 170,
-    align: 'right',
   }
 ];
 
@@ -182,6 +179,7 @@ const ListPeople=(): JSX.Element => {
     </TableRow>;
     }
 
+    if(data){
     const dataRows = data.peoplePage.people;
     totalPages = data.peoplePage.pages;
 
@@ -197,7 +195,9 @@ const ListPeople=(): JSX.Element => {
           })}
         </TableRow>
       ));
-    
+    }
+
+    return;
   }
 
   return (
@@ -229,7 +229,7 @@ const ListPeople=(): JSX.Element => {
               ))}
             </TableRow>
           </TableHead>
-          <TableBody data-testid="test-table-body">
+          <TableBody id="people-table-body">
               {maybeRenderTableRows()}
           </TableBody>
         </Table>

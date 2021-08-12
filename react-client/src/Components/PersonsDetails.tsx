@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles,createStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import {
     useParams
@@ -7,8 +7,7 @@ import {
 import { gql, useQuery } from '@apollo/client';
 import Person from './ui/Person';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles({
     root: {
       marginTop: 20,
       padding: 10,
@@ -20,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: 20,
       maxHeight: 500,
     },
-}));
+});
 
 const GET_PERSONS_DETAILS = gql`
     query getPerson($id: Int!){
@@ -63,8 +62,7 @@ const PersonsDetails = () => {
             <Paper className={classes.root}>
                     {mayBeRenderDetails()}
             </Paper>
-    )
-    
+    )    
 }
 
 
