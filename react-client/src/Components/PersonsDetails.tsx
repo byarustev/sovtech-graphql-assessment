@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     },
 });
 
-const GET_PERSONS_DETAILS = gql`
+export const GET_PERSONS_DETAILS = gql`
     query getPerson($id: Int!){
         person(id:$id){
         name
@@ -39,7 +39,7 @@ const GET_PERSONS_DETAILS = gql`
     }
 `;
 
-const PersonsDetails = () => {
+const PersonsDetails = (): JSX.Element => {
     const classes = useStyles();
     let { id } = useParams<{ id: string }>();
 
@@ -48,14 +48,19 @@ const PersonsDetails = () => {
       });
   
     const mayBeRenderDetails = ()=>{
-      if (loading) return <p>Loading ...</p>;
+      if (loading) {
+        return <p>Loading...</p>;
+      };
       if(error){
-          return (<p>Failed to fetch the data</p>)
+          return <p>Failed to fetch the data</p>;
       }
-
-      return <Person 
+      if(data){
+        return <Person 
           person = {data.person}
       />
+      }
+
+      return;
     }
 
     return(

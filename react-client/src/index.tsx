@@ -9,7 +9,8 @@ import {
 } from "@apollo/client";
 
 // Todo: make this an env variable
-const apiServerUrl = "https://swapi-graphql-api-node.herokuapp.com/graphql";
+// const apiServerUrl = "https://swapi-graphql-api-node.herokuapp.com/graphql";
+const apiServerUrl = "http://localhost:4000/graphql";
 
 const client = new ApolloClient({
   uri: apiServerUrl,
