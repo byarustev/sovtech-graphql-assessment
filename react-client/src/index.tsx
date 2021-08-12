@@ -8,11 +8,13 @@ import {
   ApolloProvider,
 } from "@apollo/client";
 
+// Todo: make this an env variable
+const apiServerUrl = "https://swapi-graphql-api-node.herokuapp.com/graphql";
+
 const client = new ApolloClient({
-  uri: 'https://swapi-graphql-api-node.herokuapp.com/graphql',
+  uri: apiServerUrl,
   cache: new InMemoryCache()
 });
-
 
 ReactDOM.render(
   <ApolloProvider client={client}>

@@ -68,8 +68,8 @@ const PersonComponent = (prop: {person: PersonType}): JSX.Element =>{
           </Typography>
         </Grid>
       <Grid container item xs={6} direction="column">
-      <Typography gutterBottom variant="subtitle1">
-          Home Planet Details
+          <Typography gutterBottom variant="subtitle1">
+            Home Planet Details
           </Typography>
           <Typography variant="body2" gutterBottom>
             Planet: {person.homeworld.name}

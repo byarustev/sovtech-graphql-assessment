@@ -1,13 +1,12 @@
 import React from 'react';
-import { makeStyles,createStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { gql, useLazyQuery } from '@apollo/client';
 import Person from './ui/Person';
 import { Button } from '@material-ui/core';
 import { Input } from '@material-ui/core';
 import { useState } from 'react';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles({
     root: {
       marginTop: 20,
       padding: 10,
@@ -24,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor:"#2d3436",
         color: "#ffffff",
     }
-}));
+});
 
 const SEARCH_PEOPLE = gql`
     query searchPeople($name: String!){
@@ -56,7 +55,6 @@ const SearchPeople = () => {
         }
     };
 
-    
     const mayBeRenderSearchResults = ()=>{
       if (loading) return <p>Loading ...</p>;
       if(error){
