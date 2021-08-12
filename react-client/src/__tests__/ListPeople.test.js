@@ -83,4 +83,21 @@ const mocks = {
       expect(wrapper.text()).toContain("Polly Skywalker");
     });
 
+    it('tab should switch to search once search button is clicked', async () => {
+      
+      await act(async ()=>{
+        wrapper = mount(
+          <MockedProvider mocks={[mocks]} addTypename={false}>
+            <PageProvider>
+            <ListPeople page={1} />
+            </PageProvider>
+          </MockedProvider>,
+        );
+      })
+
+      await act(()=>wait(0));
+      wrapper.update();
+      expect(wrapper).toBeTruthy();
+      expect(wrapper.text()).toContain("Polly Skywalker");
+    });
 });

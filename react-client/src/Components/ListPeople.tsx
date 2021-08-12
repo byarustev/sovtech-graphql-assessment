@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
+import Container from '@material-ui/core/Container';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
@@ -14,8 +15,6 @@ import Pagination from '@material-ui/lab/Pagination';
 import { useHistory } from "react-router-dom";
 import { gql, useQuery } from '@apollo/client';
 import {PageContext} from '../PagesContext';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import SearchPerson from './SearchPeople';
 
 interface Column {
@@ -54,7 +53,12 @@ const useStyles = makeStyles({
     width: '100%',
   },
   container: {
-    marginTop: 10,
+    marginTop: 15,
+    marginBottom: 20,
+    maxHeight: 500,
+  },
+  searchContainer: {
+    marginTop: 20,
     marginBottom: 20,
     maxHeight: 500,
   },
@@ -105,9 +109,7 @@ const TabPanel=(props: TabPanelProps) =>{
       {...other}
     >
       {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
+          children
       )}
     </div>
   );
@@ -244,7 +246,9 @@ const ListPeople=(): JSX.Element => {
       {/* end home content */}
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
-        <SearchPerson />
+        <Container className={classes.searchContainer}>
+          <SearchPerson />
+        </Container>
       </TabPanel>
       
     </Paper>
