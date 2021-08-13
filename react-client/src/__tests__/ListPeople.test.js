@@ -84,5 +84,20 @@ const mocks = {
       expect(wrapper.text()).toContain("Polly Skywalker");
     });
 
+    it('should update slected tab once search Tab is clicked', ()=>{
+      wrapper = mount(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <PageProvider>
+          <ListPeople page={1} />
+          </PageProvider>
+        </MockedProvider>,
+      );
+      const searchTabText = '[label="Search"]';
+      wrapper.find(searchTabText).first();
+      expect(wrapper.find(searchTabText).first().props()['selected']).toBe(false);
+      wrapper.find(searchTabText).first().simulate('click');
+      wrapper.update();
+      expect(wrapper.find(searchTabText).first().props()['selected']).toBe(true);
+    })
 
 });

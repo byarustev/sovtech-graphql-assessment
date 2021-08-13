@@ -145,7 +145,6 @@ const ListPeople=(): JSX.Element => {
   const [page, setPage] = useContext(PageContext);
 
   const [tabValue, setTabValue] = React.useState(0);
-
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabValue(newValue);
   };
@@ -209,6 +208,7 @@ const ListPeople=(): JSX.Element => {
           variant="fullWidth"
           value={tabValue}
           onChange={handleTabChange}
+          data-testid="home-page-tab"
           TabIndicatorProps={{ style: { background: "#ffffff" } }}
         >
           <LinkTab label="Home"  {...a11yProps(0)} />

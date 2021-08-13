@@ -25,7 +25,7 @@ const useStyles = makeStyles({
     }
 });
 
-const SEARCH_PEOPLE = gql`
+export const SEARCH_PEOPLE = gql`
     query searchPeople($name: String!){
         searchPeople(name: $name){
         name
@@ -43,7 +43,7 @@ const SEARCH_PEOPLE = gql`
     }
 `;
 
-const SearchPeople = () => {
+const SearchPeople = (): JSX.Element => {
     const classes = useStyles();
     const [name, setName] = useState("");
     const [ getPersonsDetails, {loading, error, data} ] = useLazyQuery(SEARCH_PEOPLE);
@@ -79,7 +79,7 @@ const SearchPeople = () => {
     return(
         <React.Fragment>
             <Input placeholder="Search text" value={name} onChange={(e)=>setName(e.target.value)} />
-            <Button variant="contained" className={classes.searchBtn} onClick={(e)=>handleSubmit(e)}>
+            <Button variant="contained" data-testid="search-button" className={classes.searchBtn} onClick={(e)=>handleSubmit(e)}>
                 Search
             </Button>
             {mayBeRenderSearchResults()}

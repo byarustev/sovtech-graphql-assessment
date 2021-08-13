@@ -54,7 +54,7 @@ const mocks = {
     it('should render error message', async () => {   
         await act(async ()=>{
         wrapper = mount(
-          <MockedProvider mocks={[]} addTypename={false}>
+          <MockedProvider mocks={[mocks]} addTypename={false}>
               <MemoryRouter initialEntries={["/details/1"]}>
                   <PersonsDetails />
             </MemoryRouter>

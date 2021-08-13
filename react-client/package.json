@@ -19,6 +19,7 @@
     "graphql-tag": "^2.12.5",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
+    "react-intl": "^5.20.7",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-test-renderer": "16.14.0",
