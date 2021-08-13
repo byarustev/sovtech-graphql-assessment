@@ -61,6 +61,7 @@ const useStyles = makeStyles({
     marginTop: 20,
     marginBottom: 20,
     maxHeight: 500,
+    overflowY: "scroll"
   },
   appBar:{
     background:"#2d3436",

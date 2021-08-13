@@ -65,14 +65,14 @@ const SearchPeople = (): JSX.Element => {
               return <p>No results found</p>
           }
           
-      return data.searchPeople.map((person: any, index: number)=>
-        <Person 
-            key={index}
-            person = {person}
-        />
-        )
-      
-      }
+      return data.searchPeople.map((person: any, index: number)=>(
+          <React.Fragment key={index}>
+            <Person 
+                person = {person}
+            />
+            <hr/>
+        </React.Fragment>
+      ))}
       return;
     }
 
