@@ -56,7 +56,7 @@ const SearchPeople = (): JSX.Element => {
     };
 
     const mayBeRenderSearchResults = ()=>{
-      if (loading) return <p>Loading ...</p>;
+      if (loading) return <p>Loading...</p>;
       if(error){
           return (<p>Could not find what you are looking for.</p>)
       }
@@ -78,7 +78,7 @@ const SearchPeople = (): JSX.Element => {
 
     return(
         <React.Fragment>
-            <Input placeholder="Search text" value={name} onChange={(e)=>setName(e.target.value)} />
+            <Input placeholder="Search text" data-testid="search-input" value={name} onChange={(e)=>setName(e.target.value)} />
             <Button variant="contained" data-testid="search-button" className={classes.searchBtn} onClick={(e)=>handleSubmit(e)}>
                 Search
             </Button>

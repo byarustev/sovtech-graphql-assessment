@@ -93,7 +93,6 @@ const mocks = {
         </MockedProvider>,
       );
       const searchTabText = '[label="Search"]';
-      wrapper.find(searchTabText).first();
       expect(wrapper.find(searchTabText).first().props()['selected']).toBe(false);
       wrapper.find(searchTabText).first().simulate('click');
       wrapper.update();
